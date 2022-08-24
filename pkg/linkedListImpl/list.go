@@ -3,13 +3,13 @@ package linkedListImpl
 import "fmt"
 
 type Item struct {
-	Value Value
+	Value Value[any]
 	Prev  *Item
 	Next  *Item
 }
 
-type Value struct {
-	Data any
+type Value[T any] struct {
+	Data T
 }
 
 type LinkedList struct {
@@ -35,7 +35,7 @@ func (l *LinkedList) GetLastElemPointer() *Item {
 }
 
 func (l *LinkedList) AddItemToFront(v any) {
-	item := Item{Value: Value{Data: v}}
+	item := Item{Value: Value[any]{Data: v}}
 	temp := l.GetFirstElemPointer()
 	item.Next = temp
 	l.Head = &item
@@ -48,7 +48,7 @@ func (l *LinkedList) AddItemToFront(v any) {
 }
 
 func (l *LinkedList) AddItemToBack(v any) {
-	item := Item{Value: Value{
+	item := Item{Value: Value[any]{
 		Data: v,
 	}}
 	temp := l.Tail
@@ -128,7 +128,7 @@ func (l *LinkedList) InsertAfterElem(element any, mark *Item) error {
 		z := l.Head.Next
 		x := z.Next
 		x.Prev = z
-		x.Value = Value{
+		x.Value = Value[any]{
 			Data: element,
 		}
 		l.Len++
@@ -142,7 +142,7 @@ func (l *LinkedList) InsertAfterElem(element any, mark *Item) error {
 			z := currentItem.Next
 			x := z.Next
 			x.Prev = z
-			x.Value = Value{Data: element}
+			x.Value = Value[any]{Data: element}
 			l.Len++
 			return nil
 		}
