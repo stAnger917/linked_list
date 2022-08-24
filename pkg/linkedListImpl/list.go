@@ -2,40 +2,36 @@ package linkedListImpl
 
 import "fmt"
 
-type Item struct {
-	Value Value[any]
-	Prev  *Item
-	Next  *Item
+type Item[T any] struct {
+	Value T
+	Prev  *Item[T]
+	Next  *Item[T]
 }
 
-type Value[T any] struct {
-	Data T
-}
-
-type LinkedList struct {
+type LinkedList[T any] struct {
 	Len  int
-	Head *Item
-	Tail *Item
+	Head *Item[T]
+	Tail *Item[T]
 }
 
-func InitLinkedList() *LinkedList {
-	return &LinkedList{}
+func InitLinkedList() *LinkedList[any] {
+	return &LinkedList[any]{}
 }
 
-func (l *LinkedList) GetListLength() int {
+func (l *LinkedList[any]) GetListLength() int {
 	return l.Len
 }
 
-func (l *LinkedList) GetFirstElemPointer() *Item {
+func (l *LinkedList[any]) GetFirstElemPointer() *Item[any] {
 	return l.Head
 }
 
-func (l *LinkedList) GetLastElemPointer() *Item {
+func (l *LinkedList[any]) GetLastElemPointer() *Item[any] {
 	return l.Tail
 }
 
-func (l *LinkedList) AddItemToFront(v any) {
-	item := Item{Value: Value[any]{Data: v}}
+func (l *LinkedList[any]) AddItemToFront(v any) {
+	item := Item[any]{Value: v}
 	temp := l.GetFirstElemPointer()
 	item.Next = temp
 	l.Head = &item
@@ -47,10 +43,8 @@ func (l *LinkedList) AddItemToFront(v any) {
 	l.Len++
 }
 
-func (l *LinkedList) AddItemToBack(v any) {
-	item := Item{Value: Value[any]{
-		Data: v,
-	}}
+func (l *LinkedList[any]) AddItemToBack(v any) {
+	item := Item[any]{Value: v}
 	temp := l.Tail
 	item.Prev = temp
 	l.Tail = &item
@@ -62,7 +56,7 @@ func (l *LinkedList) AddItemToBack(v any) {
 	l.Len++
 }
 
-func (l *LinkedList) RemoveItem(item Item) {
+func (l *LinkedList[any]) RemoveItem(item Item[any]) {
 	prev := item.Prev
 	next := item.Next
 	if prev != nil {
@@ -80,7 +74,7 @@ func (l *LinkedList) RemoveItem(item Item) {
 	item.Next = nil
 }
 
-func (l *LinkedList) RemoveFrontItem() error {
+func (l *LinkedList[any]) RemoveFrontItem() error {
 	if l.Head == nil {
 		return fmt.Errorf("removeFrontItem err: list is empty")
 	}
@@ -89,11 +83,11 @@ func (l *LinkedList) RemoveFrontItem() error {
 	return nil
 }
 
-func (l *LinkedList) RemoveBackItem() error {
+func (l *LinkedList[any]) RemoveBackItem() error {
 	if l.Head == nil {
 		return fmt.Errorf("removeBackItem err: list is empty")
 	}
-	var prev *Item
+	var prev *Item[any]
 	current := l.Head
 	for current.Next != nil {
 		prev = current
@@ -108,19 +102,19 @@ func (l *LinkedList) RemoveBackItem() error {
 	return nil
 }
 
-func (i Item) GetItemValue() any {
+func (i Item[any]) GetItemValue() any {
 	return i.Value
 }
 
-func (i Item) GetNextItemPointer() *Item {
+func (i Item[any]) GetNextItemPointer() *Item[any] {
 	return i.Next
 }
 
-func (i Item) GetPreviousItemPointer() *Item {
+func (i Item[any]) GetPreviousItemPointer() *Item[any] {
 	return i.Prev
 }
 
-func (l *LinkedList) InsertAfterElem(element any, mark *Item) error {
+func (l *LinkedList[any]) InsertAfterElem(element any, mark *Item[any]) error {
 	if l.Head == nil {
 		return fmt.Errorf("insertAfterElem err: list is empty")
 	}
@@ -128,9 +122,7 @@ func (l *LinkedList) InsertAfterElem(element any, mark *Item) error {
 		z := l.Head.Next
 		x := z.Next
 		x.Prev = z
-		x.Value = Value[any]{
-			Data: element,
-		}
+		x.Value = element
 		l.Len++
 		return nil
 	} else {
@@ -142,7 +134,7 @@ func (l *LinkedList) InsertAfterElem(element any, mark *Item) error {
 			z := currentItem.Next
 			x := z.Next
 			x.Prev = z
-			x.Value = Value[any]{Data: element}
+			x.Value = element
 			l.Len++
 			return nil
 		}
