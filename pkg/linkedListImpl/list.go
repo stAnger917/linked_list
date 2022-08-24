@@ -18,20 +18,34 @@ func InitLinkedList() *LinkedList[any] {
 	return &LinkedList[any]{}
 }
 
-func (l *LinkedList[any]) GetListLength() int {
+func (l *LinkedList[T]) GetListLength() int {
 	return l.Len
 }
 
-func (l *LinkedList[any]) GetFirstElemPointer() *Item[any] {
+func (l *LinkedList[T]) GetFirstElemPointer() *Item[T] {
 	return l.Head
 }
 
-func (l *LinkedList[any]) GetLastElemPointer() *Item[any] {
+func (l *LinkedList[T]) GetLastElemPointer() *Item[T] {
 	return l.Tail
 }
 
-func (l *LinkedList[any]) AddItemToFront(v any) {
-	item := Item[any]{Value: v}
+func (l *LinkedList[T]) ListToSlice() []any {
+	var result []any
+	if l.Head == nil {
+		return result
+	}
+	current := l.Head
+	for current.Next != nil {
+		result = append(result, current.Value)
+		current = current.Next
+	}
+	result = append(result, current)
+	return result
+}
+
+func (l *LinkedList[T]) AddItemToFront(v T) {
+	item := Item[T]{Value: v}
 	temp := l.GetFirstElemPointer()
 	item.Next = temp
 	l.Head = &item
@@ -43,8 +57,8 @@ func (l *LinkedList[any]) AddItemToFront(v any) {
 	l.Len++
 }
 
-func (l *LinkedList[any]) AddItemToBack(v any) {
-	item := Item[any]{Value: v}
+func (l *LinkedList[T]) AddItemToBack(v T) {
+	item := Item[T]{Value: v}
 	temp := l.Tail
 	item.Prev = temp
 	l.Tail = &item
@@ -56,7 +70,7 @@ func (l *LinkedList[any]) AddItemToBack(v any) {
 	l.Len++
 }
 
-func (l *LinkedList[any]) RemoveItem(item Item[any]) {
+func (l *LinkedList[T]) RemoveItem(item Item[T]) {
 	prev := item.Prev
 	next := item.Next
 	if prev != nil {
@@ -74,7 +88,7 @@ func (l *LinkedList[any]) RemoveItem(item Item[any]) {
 	item.Next = nil
 }
 
-func (l *LinkedList[any]) RemoveFrontItem() error {
+func (l *LinkedList[T]) RemoveFrontItem() error {
 	if l.Head == nil {
 		return fmt.Errorf("removeFrontItem err: list is empty")
 	}
@@ -83,11 +97,11 @@ func (l *LinkedList[any]) RemoveFrontItem() error {
 	return nil
 }
 
-func (l *LinkedList[any]) RemoveBackItem() error {
+func (l *LinkedList[T]) RemoveBackItem() error {
 	if l.Head == nil {
 		return fmt.Errorf("removeBackItem err: list is empty")
 	}
-	var prev *Item[any]
+	var prev *Item[T]
 	current := l.Head
 	for current.Next != nil {
 		prev = current
@@ -102,19 +116,19 @@ func (l *LinkedList[any]) RemoveBackItem() error {
 	return nil
 }
 
-func (i Item[any]) GetItemValue() any {
+func (i Item[T]) GetItemValue() T {
 	return i.Value
 }
 
-func (i Item[any]) GetNextItemPointer() *Item[any] {
+func (i Item[T]) GetNextItemPointer() *Item[T] {
 	return i.Next
 }
 
-func (i Item[any]) GetPreviousItemPointer() *Item[any] {
+func (i Item[T]) GetPreviousItemPointer() *Item[T] {
 	return i.Prev
 }
 
-func (l *LinkedList[any]) InsertAfterElem(element any, mark *Item[any]) error {
+func (l *LinkedList[T]) InsertAfterElem(element T, mark *Item[T]) error {
 	if l.Head == nil {
 		return fmt.Errorf("insertAfterElem err: list is empty")
 	}
