@@ -1,4 +1,4 @@
-package linked_list
+package linkedListImpl
 
 import "fmt"
 
@@ -118,4 +118,34 @@ func (i Item) GetNextItemPointer() *Item {
 
 func (i Item) GetPreviousItemPointer() *Item {
 	return i.Prev
+}
+
+func (l *LinkedList) InsertAfterElem(element any, mark *Item) error {
+	if l.Head == nil {
+		return fmt.Errorf("insertAfterElem err: list is empty")
+	}
+	if l.Head.Next == mark {
+		z := l.Head.Next
+		x := z.Next
+		x.Prev = z
+		x.Value = Value{
+			Data: element,
+		}
+		l.Len++
+		return nil
+	} else {
+		currentItem := l.Head.Next
+		for currentItem != nil && currentItem.Next != nil && currentItem.Next != mark {
+			currentItem = currentItem.Next
+		}
+		if currentItem == mark {
+			z := currentItem.Next
+			x := z.Next
+			x.Prev = z
+			x.Value = Value{Data: element}
+			l.Len++
+			return nil
+		}
+	}
+	return nil
 }
