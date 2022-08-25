@@ -10,7 +10,4 @@ func main() {
 	list := l.InitLinkedList[any]()
 	list.AddItemToFront("Test value-1")
 	list.AddItemToBack("Test value-2")
-	fmt.Println(list.Head)
-	fmt.Println(list.Tail)
-	fmt.Println(list.Len)
 }
