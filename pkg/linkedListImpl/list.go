@@ -2,8 +2,8 @@ package linkedListImpl
 
 type Item[T any] struct {
 	value T
-	Prev  *Item[T]
-	Next  *Item[T]
+	prev  *Item[T]
+	next  *Item[T]
 }
 
 type LinkedList[T any] struct {
@@ -29,62 +29,64 @@ func (l *LinkedList[T]) GetTail() *Item[T] {
 }
 
 func (l *LinkedList[T]) ListToSlice() []T {
-	result := make([]T, l.len)
-	for h := l.head; h != nil; h = h.Next {
+	result := make([]T, 0, l.len)
+	for h := l.head; h != nil; h = h.next {
 		result = append(result, h.value)
 	}
 	return result
 }
 
-func (l *LinkedList[T]) AddItemToFront(v T) {
+func (l *LinkedList[T]) AddItemToFront(v T) Item[T] {
 	item := Item[T]{value: v}
 	temp := l.head
-	item.Next = temp
+	item.next = temp
 	l.head = &item
 	if l.len == 0 {
 		l.tail = l.head
 	} else {
-		temp.Prev = &item
+		temp.prev = &item
 	}
 	l.len++
+	return item
 }
 
-func (l *LinkedList[T]) AddItemToBack(v T) {
+func (l *LinkedList[T]) AddItemToBack(v T) Item[T] {
 	item := Item[T]{value: v}
 	temp := l.tail
-	item.Prev = temp
+	item.prev = temp
 	l.tail = &item
 	if l.len == 0 {
 		l.head = l.tail
 	} else {
-		temp.Next = &item
+		temp.next = &item
 	}
 	l.len++
+	return item
 }
 
 func (l *LinkedList[T]) RemoveItem(item Item[T]) {
-	prev := item.Prev
-	next := item.Next
+	prev := item.prev
+	next := item.next
 	if prev != nil {
-		prev.Next = next
+		prev.next = next
 	} else {
 		l.head = next
 	}
 	if next != nil {
-		next.Prev = prev
+		next.prev = prev
 	} else {
 		l.tail = prev
 	}
 	l.len--
-	item.Prev = nil
-	item.Next = nil
+	item.prev = nil
+	item.next = nil
 }
 
 func (l *LinkedList[T]) RemoveFrontItem() error {
 	if l.head == nil {
 		return ErrNoItem
 	}
-	l.head = l.head.Next
+	l.head = l.head.next
 	l.len--
 	return nil
 }
@@ -95,12 +97,12 @@ func (l *LinkedList[T]) RemoveBackItem() error {
 	}
 	var prev *Item[T]
 	current := l.head
-	for current.Next != nil {
+	for current.next != nil {
 		prev = current
-		current = current.Next
+		current = current.next
 	}
 	if prev != nil {
-		prev.Next = nil
+		prev.next = nil
 	} else {
 		l.head = nil
 	}
@@ -113,33 +115,33 @@ func (i Item[T]) GetItemValue() T {
 }
 
 func (i Item[T]) GetNextItemPointer() *Item[T] {
-	return i.Next
+	return i.next
 }
 
 func (i Item[T]) GetPreviousItemPointer() *Item[T] {
-	return i.Prev
+	return i.prev
 }
 
 func (l *LinkedList[T]) InsertAfterElem(element T, mark *Item[T]) error {
 	if l.head == nil {
 		return ErrNoItem
 	}
-	if l.head.Next == mark {
-		z := l.head.Next
-		x := z.Next
-		x.Prev = z
+	if l.head.next == mark {
+		z := l.head.next
+		x := z.next
+		x.prev = z
 		x.value = element
 		l.len++
 		return nil
 	} else {
-		currentItem := l.head.Next
-		for currentItem != nil && currentItem.Next != nil && currentItem.Next != mark {
-			currentItem = currentItem.Next
+		currentItem := l.head.next
+		for currentItem != nil && currentItem.next != nil && currentItem.next != mark {
+			currentItem = currentItem.next
 		}
 		if currentItem == mark {
-			z := currentItem.Next
-			x := z.Next
-			x.Prev = z
+			z := currentItem.next
+			x := z.next
+			x.prev = z
 			x.value = element
 			l.len++
 			return nil

@@ -69,7 +69,7 @@ func TestLinkedList_GetHead(t *testing.T) {
 			if tt.nilHead {
 				assert.Nil(t, got)
 			} else {
-				assert.Equal(t, tt.want, got.Value, "GetHead")
+				assert.Equal(t, tt.want, got.value, "GetHead")
 			}
 		})
 	}
@@ -108,8 +108,198 @@ func TestLinkedList_GetTail(t *testing.T) {
 			if tt.nilTail {
 				assert.Nil(t, got)
 			} else {
-				assert.Equal(t, tt.want, got.Value, "GetTail()")
+				assert.Equal(t, tt.want, got.value, "GetTail()")
 			}
+		})
+	}
+}
+
+func TestLinkedList_ListToSlice(t *testing.T) {
+	tests := []struct {
+		name       string
+		want       []string
+		valueToAdd []string
+	}{
+		{
+			name:       "positive case - 1",
+			want:       []string{"test_data", "another_test_data"},
+			valueToAdd: []string{"test_data", "another_test_data"},
+		},
+		{
+			name:       "positive case - 2 - empty list",
+			want:       []string{},
+			valueToAdd: []string{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := InitLinkedList[string]()
+			for _, v := range tt.valueToAdd {
+				l.AddItemToBack(v)
+			}
+			assert.Equalf(t, tt.want, l.ListToSlice(), "ListToSlice()")
+		})
+	}
+}
+
+func TestLinkedList_AddItemToFront_Logic(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		want string
+	}{
+		{
+			name: "positive case - 1",
+			args: []string{"test_data"},
+			want: "test_data",
+		},
+		{
+			name: "positive case - 2 - couple objects",
+			args: []string{"test_data", "another_test_data"},
+			want: "another_test_data",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := InitLinkedList[string]()
+			for _, v := range tt.args {
+				l.AddItemToFront(v)
+			}
+			assert.Equalf(t, tt.want, l.GetHead().value, "AddItemToFront")
+			assert.Equal(t, len(tt.args), l.len)
+		})
+	}
+}
+
+func TestLinkedList_AddItemToFront_Value(t *testing.T) {
+	tests := []struct {
+		name            string
+		arg             string
+		want            string
+		needPretestData bool
+		nextElemNotNil  bool
+	}{
+		{
+			name: "positive case - 1",
+			arg:  "test_data",
+			want: "test_data",
+		},
+		{
+			name:            "positive case - 2",
+			arg:             "test_data",
+			want:            "test_data",
+			nextElemNotNil:  true,
+			needPretestData: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := InitLinkedList[string]()
+			if tt.needPretestData {
+				l.AddItemToBack(tt.arg)
+			}
+			elem := l.AddItemToFront(tt.arg)
+			assert.Equal(t, tt.want, elem.value)
+			assert.Nil(t, elem.prev)
+			if tt.nextElemNotNil {
+				assert.NotEmpty(t, elem.next)
+			}
+		})
+	}
+}
+
+func TestLinkedList_AddItemToBack_Logic(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		want string
+	}{
+		{
+			name: "positive case - 1",
+			args: []string{"test_data"},
+			want: "test_data",
+		},
+		{
+			name: "positive case - 2 - couple objects",
+			args: []string{"test_data", "another_test_data"},
+			want: "another_test_data",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := InitLinkedList[string]()
+			for _, v := range tt.args {
+				l.AddItemToBack(v)
+			}
+			assert.Equalf(t, tt.want, l.GetTail().value, "AddItemToFront")
+			assert.Equal(t, len(tt.args), l.len)
+		})
+	}
+}
+
+func TestLinkedList_AddItemToBack_Value(t *testing.T) {
+	tests := []struct {
+		name            string
+		arg             string
+		want            string
+		needPretestData bool
+		prevElemNotNil  bool
+	}{
+		{
+			name: "positive case - 1",
+			arg:  "test_data",
+			want: "test_data",
+		},
+		{
+			name:            "positive case - 2",
+			arg:             "test_data",
+			want:            "test_data",
+			prevElemNotNil:  true,
+			needPretestData: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := InitLinkedList[string]()
+			if tt.needPretestData {
+				l.AddItemToFront(tt.arg)
+			}
+			elem := l.AddItemToBack(tt.arg)
+			assert.Equal(t, tt.want, elem.value)
+			assert.Nil(t, elem.next)
+			if tt.prevElemNotNil {
+				assert.NotEmpty(t, elem.prev)
+			}
+		})
+	}
+}
+
+func TestLinkedList_RemoveItem(t *testing.T) {
+	tests := []struct {
+		name        string
+		expectedLen int
+		dataToAdd   []string
+	}{
+		{
+			name:        "positive case - 1",
+			expectedLen: 0,
+			dataToAdd:   []string{},
+		},
+		{
+			name:        "positive case - 2",
+			expectedLen: 1,
+			dataToAdd:   []string{"some_data"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := InitLinkedList[string]()
+			for _, v := range tt.dataToAdd {
+				l.AddItemToFront(v)
+			}
+			elem := l.AddItemToBack("test_data")
+			l.RemoveItem(elem)
+			assert.Equal(t, tt.expectedLen, l.len)
 		})
 	}
 }
