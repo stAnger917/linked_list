@@ -26,7 +26,7 @@ func TestLinkedList_GetListLength(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			testList := InitLinkedList()
+			testList := InitLinkedList[string]()
 			if tt.needPreTestFunc {
 				testList.AddItemToFront("SomeTestData")
 				testList.AddItemToFront("AnotherTestData")
@@ -38,12 +38,14 @@ func TestLinkedList_GetListLength(t *testing.T) {
 	}
 }
 
-func TestLinkedList_GetFirstElemPointer(t *testing.T) {
+func TestLinkedList_GetHead(t *testing.T) {
 	tests := []struct {
 		name               string
 		howManyElementsAdd int
 		want               *Item[any]
 		valueToAdd         []string
+		wantErr            bool
+		error              error
 	}{
 		{
 			name: "positive case - 1",
@@ -59,6 +61,8 @@ func TestLinkedList_GetFirstElemPointer(t *testing.T) {
 			name:               "positive case - 2 - empty list",
 			want:               nil,
 			howManyElementsAdd: 0,
+			wantErr:            true,
+			error:              ErrNilHead,
 		},
 		{
 			name: "positive case - 3 - couple elements in list",
@@ -71,20 +75,26 @@ func TestLinkedList_GetFirstElemPointer(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := InitLinkedList()
+			l := InitLinkedList[string]()
 			for i := 0; i < tt.howManyElementsAdd; i++ {
 				l.AddItemToFront(fmt.Sprintf("%v", tt.valueToAdd[i]))
 			}
-			got := l.GetFirstElemPointer()
-			assert.Equal(t, tt.want.Value, got.Value, "GetFirstElemPointer")
+			got, err := l.GetHead()
+			if tt.wantErr {
+				assert.Equal(t, tt.error, err, "GetHead")
+			} else {
+				assert.Equal(t, tt.want.Value, got.Value, "GetHead")
+			}
 		})
 	}
 }
 
-func TestLinkedList_GetLastElemPointer(t *testing.T) {
+func TestLinkedList_GetTail(t *testing.T) {
 	tests := []struct {
 		name               string
 		want               *Item[any]
+		wantErr            bool
+		error              error
 		howManyElementsAdd int
 		valueToAdd         []string
 	}{
@@ -102,6 +112,8 @@ func TestLinkedList_GetLastElemPointer(t *testing.T) {
 			name:               "positive case - 2 - empty list",
 			want:               nil,
 			howManyElementsAdd: 0,
+			wantErr:            true,
+			error:              ErrNilTail,
 		},
 		{
 			name: "positive case - 3 - couple elements",
@@ -114,19 +126,19 @@ func TestLinkedList_GetLastElemPointer(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := InitLinkedList()
+			l := InitLinkedList[string]()
 			for i := 0; i < tt.howManyElementsAdd; i++ {
 				l.AddItemToBack(fmt.Sprintf("%v", tt.valueToAdd[i]))
 			}
 			listSlice := l.ListToSlice()
-			got := l.GetLastElemPointer()
-			if got != nil {
-				assert.Equal(t, tt.want.Value, got.Value, "GetLastElemPointer()")
+			got, err := l.GetTail()
+			if tt.wantErr {
+				assert.Equal(t, tt.error, err, "GetTail")
 			} else {
-				assert.Nil(t, got, "GetLastElemPointer() for empty list")
-			}
-			if len(listSlice) > 0 {
-				assert.Equalf(t, listSlice[len(listSlice)-1], got, "GetLastElemPointer()")
+				assert.Equal(t, tt.want.Value, got.Value, "GetTail()")
+				if len(listSlice) > 0 {
+					assert.Equalf(t, listSlice[len(listSlice)-1], got, "GetTail()")
+				}
 			}
 		})
 	}

@@ -1,7 +1,5 @@
 package linkedListImpl
 
-import "fmt"
-
 type Item[T any] struct {
 	Value T
 	Prev  *Item[T]
@@ -14,20 +12,26 @@ type LinkedList[T any] struct {
 	Tail *Item[T]
 }
 
-func InitLinkedList() *LinkedList[any] {
-	return &LinkedList[any]{}
+func InitLinkedList[T any]() *LinkedList[T] {
+	return &LinkedList[T]{}
 }
 
 func (l *LinkedList[T]) GetListLength() int {
 	return l.Len
 }
 
-func (l *LinkedList[T]) GetFirstElemPointer() *Item[T] {
-	return l.Head
+func (l *LinkedList[T]) GetHead() (*Item[T], error) {
+	if l.Head != nil {
+		return l.Head, nil
+	}
+	return nil, ErrNilHead
 }
 
-func (l *LinkedList[T]) GetLastElemPointer() *Item[T] {
-	return l.Tail
+func (l *LinkedList[T]) GetTail() (*Item[T], error) {
+	if l.Tail != nil {
+		return l.Tail, nil
+	}
+	return nil, ErrNilTail
 }
 
 func (l *LinkedList[T]) ListToSlice() []any {
@@ -46,7 +50,7 @@ func (l *LinkedList[T]) ListToSlice() []any {
 
 func (l *LinkedList[T]) AddItemToFront(v T) {
 	item := Item[T]{Value: v}
-	temp := l.GetFirstElemPointer()
+	temp, _ := l.GetHead()
 	item.Next = temp
 	l.Head = &item
 	if l.Len == 0 {
@@ -90,7 +94,7 @@ func (l *LinkedList[T]) RemoveItem(item Item[T]) {
 
 func (l *LinkedList[T]) RemoveFrontItem() error {
 	if l.Head == nil {
-		return fmt.Errorf("removeFrontItem err: list is empty")
+		return ErrNoItem
 	}
 	l.Head = l.Head.Next
 	l.Len--
@@ -99,7 +103,7 @@ func (l *LinkedList[T]) RemoveFrontItem() error {
 
 func (l *LinkedList[T]) RemoveBackItem() error {
 	if l.Head == nil {
-		return fmt.Errorf("removeBackItem err: list is empty")
+		return ErrNoItem
 	}
 	var prev *Item[T]
 	current := l.Head
@@ -130,7 +134,7 @@ func (i Item[T]) GetPreviousItemPointer() *Item[T] {
 
 func (l *LinkedList[T]) InsertAfterElem(element T, mark *Item[T]) error {
 	if l.Head == nil {
-		return fmt.Errorf("insertAfterElem err: list is empty")
+		return ErrNoItem
 	}
 	if l.Head.Next == mark {
 		z := l.Head.Next
