@@ -1,7 +1,6 @@
 package linkedListImpl
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,27 +8,26 @@ import (
 
 func TestLinkedList_GetListLength(t *testing.T) {
 	tests := []struct {
-		name            string
-		want            int
-		needPreTestFunc bool
+		name      string
+		want      int
+		dataToAdd []string
 	}{
 		{
-			name:            "positive case - 1",
-			needPreTestFunc: true,
-			want:            2,
+			name:      "positive case - 1",
+			dataToAdd: []string{"some_data", "another_one_test_data"},
+			want:      2,
 		},
 		{
-			name:            "positive case - 2",
-			needPreTestFunc: false,
-			want:            0,
+			name:      "positive case - 2",
+			dataToAdd: []string{},
+			want:      0,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			testList := InitLinkedList[string]()
-			if tt.needPreTestFunc {
-				testList.AddItemToFront("SomeTestData")
-				testList.AddItemToFront("AnotherTestData")
+			for _, v := range tt.dataToAdd {
+				testList.AddItemToBack(v)
 			}
 			if got := testList.GetListLength(); got != tt.want {
 				t.Errorf("GetListLength() = %v, want %v", got, tt.want)
@@ -40,50 +38,38 @@ func TestLinkedList_GetListLength(t *testing.T) {
 
 func TestLinkedList_GetHead(t *testing.T) {
 	tests := []struct {
-		name               string
-		howManyElementsAdd int
-		want               *Item[any]
-		valueToAdd         []string
-		wantErr            bool
-		error              error
+		name       string
+		want       string
+		valueToAdd []string
+		nilHead    bool
 	}{
 		{
-			name: "positive case - 1",
-			want: &Item[any]{
-				Value: "test_value",
-				Next:  nil,
-				Prev:  nil,
-			},
-			howManyElementsAdd: 1,
-			valueToAdd:         []string{"test_value"},
+			name:       "positive case - 1",
+			want:       "test_value",
+			valueToAdd: []string{"test_value"},
 		},
 		{
-			name:               "positive case - 2 - empty list",
-			want:               nil,
-			howManyElementsAdd: 0,
-			wantErr:            true,
-			error:              ErrNilHead,
+			name:    "positive case - 2 - empty list",
+			want:    "",
+			nilHead: true,
 		},
 		{
-			name: "positive case - 3 - couple elements in list",
-			want: &Item[any]{
-				Value: "another_test_value",
-			},
-			howManyElementsAdd: 2,
-			valueToAdd:         []string{"test_value", "another_test_value"},
+			name:       "positive case - 3 - couple elements in list",
+			want:       "another_test_value",
+			valueToAdd: []string{"test_value", "another_test_value"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := InitLinkedList[string]()
-			for i := 0; i < tt.howManyElementsAdd; i++ {
-				l.AddItemToFront(fmt.Sprintf("%v", tt.valueToAdd[i]))
+			for _, v := range tt.valueToAdd {
+				l.AddItemToFront(v)
 			}
-			got, err := l.GetHead()
-			if tt.wantErr {
-				assert.Equal(t, tt.error, err, "GetHead")
+			got := l.GetHead()
+			if tt.nilHead {
+				assert.Nil(t, got)
 			} else {
-				assert.Equal(t, tt.want.Value, got.Value, "GetHead")
+				assert.Equal(t, tt.want, got.Value, "GetHead")
 			}
 		})
 	}
@@ -91,54 +77,38 @@ func TestLinkedList_GetHead(t *testing.T) {
 
 func TestLinkedList_GetTail(t *testing.T) {
 	tests := []struct {
-		name               string
-		want               *Item[any]
-		wantErr            bool
-		error              error
-		howManyElementsAdd int
-		valueToAdd         []string
+		name       string
+		want       string
+		valueToAdd []string
+		nilTail    bool
 	}{
 		{
-			name: "positive case - 1",
-			want: &Item[any]{
-				Value: "test_value",
-				Next:  nil,
-				Prev:  nil,
-			},
-			howManyElementsAdd: 1,
-			valueToAdd:         []string{"test_value"},
+			name:       "positive case - 1",
+			want:       "test_value",
+			valueToAdd: []string{"test_value"},
 		},
 		{
-			name:               "positive case - 2 - empty list",
-			want:               nil,
-			howManyElementsAdd: 0,
-			wantErr:            true,
-			error:              ErrNilTail,
+			name:    "positive case - 2 - empty list",
+			want:    "",
+			nilTail: true,
 		},
 		{
-			name: "positive case - 3 - couple elements",
-			want: &Item[any]{
-				Value: "another_test_value",
-			},
-			howManyElementsAdd: 2,
-			valueToAdd:         []string{"test_value", "another_test_value"},
+			name:       "positive case - 3 - couple elements",
+			want:       "another_test_value",
+			valueToAdd: []string{"test_value", "another_test_value"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := InitLinkedList[string]()
-			for i := 0; i < tt.howManyElementsAdd; i++ {
-				l.AddItemToBack(fmt.Sprintf("%v", tt.valueToAdd[i]))
+			for _, v := range tt.valueToAdd {
+				l.AddItemToBack(v)
 			}
-			listSlice := l.ListToSlice()
-			got, err := l.GetTail()
-			if tt.wantErr {
-				assert.Equal(t, tt.error, err, "GetTail")
+			got := l.GetTail()
+			if tt.nilTail {
+				assert.Nil(t, got)
 			} else {
-				assert.Equal(t, tt.want.Value, got.Value, "GetTail()")
-				if len(listSlice) > 0 {
-					assert.Equalf(t, listSlice[len(listSlice)-1], got, "GetTail()")
-				}
+				assert.Equal(t, tt.want, got.Value, "GetTail()")
 			}
 		})
 	}
