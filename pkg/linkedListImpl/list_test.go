@@ -303,3 +303,44 @@ func TestLinkedList_RemoveItem(t *testing.T) {
 		})
 	}
 }
+
+func TestLinkedList_RemoveFrontItem(t *testing.T) {
+	tests := []struct {
+		name          string
+		itemsToAdd    []string
+		wantErr       bool
+		finallyLen    int
+		itemValueLeft string
+	}{
+		{
+			name:       "positive case - 1",
+			itemsToAdd: []string{"test_data"},
+			wantErr:    false,
+			finallyLen: 0,
+		},
+		{
+			name:          "positive case - 1",
+			itemsToAdd:    []string{"test_data", "another_test_data"},
+			wantErr:       false,
+			finallyLen:    1,
+			itemValueLeft: "test_data",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := InitLinkedList[string]()
+			for _, v := range tt.itemsToAdd {
+				l.AddItemToFront(v)
+			}
+			err := l.RemoveFrontItem()
+			item := l.GetHead()
+			if tt.wantErr {
+				assert.Error(t, err)
+			}
+			assert.Equal(t, tt.finallyLen, l.len)
+			if tt.itemValueLeft != "" {
+				assert.Equal(t, tt.itemValueLeft, item.value)
+			}
+		})
+	}
+}
