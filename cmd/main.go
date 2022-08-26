@@ -7,7 +7,13 @@ import (
 
 func main() {
 	fmt.Println("Let`s make our linked list!")
-	list := l.InitLinkedList[any]()
-	list.AddItemToFront("Test value-1")
-	list.AddItemToBack("Test value-2")
+	list := l.InitLinkedList[string]()
+	list.AddItemToBack("hello")
+	list.AddItemToBack("world")
+	e := list.AddItemToBack("kek")
+	list.RemoveItem(e)
+
+	list.AddItemToBack("kek")
+
+	fmt.Println(list.ListToSlice())
 }

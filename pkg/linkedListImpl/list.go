@@ -75,39 +75,11 @@ func (l *LinkedList[T]) RemoveItem(item Item[T]) {
 	if next != nil {
 		next.prev = prev
 	} else {
-		l.tail = next
+		l.tail = prev
 	}
 	l.len--
 	item.prev = nil
 	item.next = nil
-}
-
-func (l *LinkedList[T]) RemoveFrontItem() error {
-	if l.head == nil {
-		return ErrNoItem
-	}
-	l.head = l.head.next
-	l.len--
-	return nil
-}
-
-func (l *LinkedList[T]) RemoveBackItem() error {
-	if l.head == nil {
-		return ErrNoItem
-	}
-	var prev *Item[T]
-	current := l.head
-	for current.next != nil {
-		prev = current
-		current = current.next
-	}
-	if prev != nil {
-		prev.next = nil
-	} else {
-		l.head = nil
-	}
-	l.len--
-	return nil
 }
 
 func (i Item[T]) GetItemValue() T {

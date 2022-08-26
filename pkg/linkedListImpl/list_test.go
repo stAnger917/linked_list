@@ -325,7 +325,7 @@ func TestLinkedList_RemoveItem(t *testing.T) {
 			expectedData: []string{testString1, testString2, testString3},
 		},
 		{
-			name:        "positive case - 3 - delete first elem",
+			name:        "positive case - 3 - delete last item",
 			expectedLen: 3,
 			listData: func() (*LinkedList[string], Item[string]) {
 				l := InitLinkedList[string]()
@@ -343,101 +343,6 @@ func TestLinkedList_RemoveItem(t *testing.T) {
 			l, item := tt.listData()
 			l.RemoveItem(item)
 			assert.Equal(t, tt.expectedLen, l.len)
-			assert.Equal(t, tt.expectedData, l.ListToSlice())
-		})
-	}
-}
-
-func TestLinkedList_RemoveFrontItem(t *testing.T) {
-	tests := []struct {
-		name          string
-		itemsToAdd    []string
-		wantErr       bool
-		finallyLen    int
-		itemValueLeft string
-	}{
-		{
-			name:       "positive case - 1",
-			itemsToAdd: []string{"test_data"},
-			wantErr:    false,
-			finallyLen: 0,
-		},
-		{
-			name:          "positive case - 1",
-			itemsToAdd:    []string{"test_data", "another_test_data"},
-			wantErr:       false,
-			finallyLen:    1,
-			itemValueLeft: "test_data",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := InitLinkedList[string]()
-			for _, v := range tt.itemsToAdd {
-				l.AddItemToFront(v)
-			}
-			err := l.RemoveFrontItem()
-			item := l.GetHead()
-			if tt.wantErr {
-				assert.Error(t, err)
-			}
-			assert.Equal(t, tt.finallyLen, l.len)
-			if tt.itemValueLeft != "" {
-				assert.Equal(t, tt.itemValueLeft, item.value)
-			}
-		})
-	}
-}
-
-func TestLinkedList_RemoveBackItem(t *testing.T) {
-	tests := []struct {
-		name         string
-		finallyLen   int
-		expectedData []string
-		listData     func() *LinkedList[string]
-		wantErr      bool
-	}{
-		{
-			name:         "positive case - 1",
-			finallyLen:   2,
-			expectedData: []string{testString1, testString2},
-			listData: func() *LinkedList[string] {
-				l := InitLinkedList[string]()
-				l.AddItemToFront(testString1)
-				l.AddItemToBack(testString2)
-				l.AddItemToBack(testString3)
-				return l
-			},
-		},
-		{
-			name:         "positive case - 2 - single element in list",
-			finallyLen:   0,
-			expectedData: []string{},
-			listData: func() *LinkedList[string] {
-				l := InitLinkedList[string]()
-				l.AddItemToFront(testString1)
-				return l
-			},
-		},
-		{
-			name:         "positive case - 3 - empty list",
-			finallyLen:   0,
-			expectedData: []string{},
-			listData: func() *LinkedList[string] {
-				l := InitLinkedList[string]()
-				return l
-			},
-			wantErr: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := tt.listData()
-			err := l.RemoveBackItem()
-			if tt.wantErr {
-				assert.Errorf(t, err, ErrNoItem.Error())
-			}
-			assert.Equal(t, tt.finallyLen, l.len)
 			assert.Equal(t, tt.expectedData, l.ListToSlice())
 		})
 	}
