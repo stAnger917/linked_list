@@ -94,42 +94,31 @@ func (i Item[T]) GetPreviousItemPointer() *Item[T] {
 	return i.prev
 }
 
-func (l *LinkedList[T]) InsertAfterElem(element T, mark *Item[T]) error {
-	if l.head == nil {
-		return ErrNoItem
+func (l *LinkedList[T]) InsertAfterElem(element T, mark *Item[T]) *Item[T] {
+	next := mark.next
+	newItem := &Item[T]{
+		value: element,
+		prev:  mark,
+		next:  next,
 	}
-	if l.head.next == mark {
-		z := l.head.next
-		x := z.next
-		x.prev = z
-		x.value = element
-		l.len++
-		return nil
+	mark.next = newItem
+	if next != nil {
+		next.prev = newItem
 	} else {
-		currentItem := l.head.next
-		for currentItem != nil && currentItem.next != nil && currentItem.next != mark {
-			currentItem = currentItem.next
-		}
-		if currentItem == mark {
-			z := currentItem.next
-			x := z.next
-			x.prev = z
-			x.value = element
-			l.len++
-			return nil
-		}
+		l.tail = newItem
 	}
-	return nil
+	l.len++
+	return newItem
 }
 
 func (l *LinkedList[T]) InsertBeforeElem(element T, mark *Item[T]) *Item[T] {
 	prev := mark.prev
-
 	newItem := &Item[T]{
 		value: element,
 		prev:  prev,
 		next:  mark,
 	}
+	mark.prev = newItem
 	if prev != nil {
 		prev.next = newItem
 	} else {

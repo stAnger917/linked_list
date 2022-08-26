@@ -429,6 +429,82 @@ func TestLinkedList_InsertBeforeElem(t *testing.T) {
 	}
 }
 
+func TestLinkedList_InsertAfterElem(t *testing.T) {
+	tests := []struct {
+		name         string
+		expectedData []string
+		listData     func() (*LinkedList[string], *Item[string])
+	}{
+		{
+			name: "positive case - 1 - mark == head",
+			listData: func() (*LinkedList[string], *Item[string]) {
+				l := InitLinkedList[string]()
+				mark := l.AddItemToFront("some_data")
+				l.AddItemToBack(testString1)
+				mark.next = l.tail
+				return l, mark
+			},
+			expectedData: []string{"some_data", "test_data_to_add", "first_string"},
+		},
+		{
+			name: "positive case - 2 - mark == head, three elements",
+			listData: func() (*LinkedList[string], *Item[string]) {
+				l := InitLinkedList[string]()
+				mark := l.AddItemToFront("some_data")
+				l.AddItemToBack(testString1)
+				mark.next = l.tail
+				l.AddItemToBack(testString2)
+				return l, mark
+			},
+			expectedData: []string{"some_data", "test_data_to_add", "first_string", "second_string"},
+		},
+		{
+			name: "positive case - 3 - mark == tail",
+			listData: func() (*LinkedList[string], *Item[string]) {
+				l := InitLinkedList[string]()
+				l.AddItemToBack(testString1)
+				l.AddItemToBack(testString2)
+				mark := l.AddItemToBack("some_data")
+				fmt.Println(l.ListToSlice())
+				return l, mark
+			},
+			expectedData: []string{"first_string", "second_string", "some_data", "test_data_to_add"},
+		},
+		{
+			name: "positive case - 4 - mark == tail, 2 items in list",
+			listData: func() (*LinkedList[string], *Item[string]) {
+				l := InitLinkedList[string]()
+				l.AddItemToBack(testString1)
+				mark := l.AddItemToBack("some_data")
+				fmt.Println(l.ListToSlice())
+				return l, mark
+			},
+			expectedData: []string{"first_string", "some_data", "test_data_to_add"},
+		},
+		{
+			name: "positive case - 5 - 4 items in list, mark in middle",
+			listData: func() (*LinkedList[string], *Item[string]) {
+				l := InitLinkedList[string]()
+				l.AddItemToBack(testString1)
+				mark := l.AddItemToBack("some_data")
+				l.AddItemToBack(testString2)
+				mark.next = l.tail
+				l.AddItemToBack(testString3)
+				fmt.Println(l.ListToSlice())
+				return l, mark
+			},
+			expectedData: []string{"first_string", "some_data", "test_data_to_add", "second_string", "third_string"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l, mark := tt.listData()
+			l.InsertAfterElem("test_data_to_add", mark)
+			assert.Equal(t, tt.expectedData, l.ListToSlice())
+		})
+	}
+}
+
 func TestLinkedList_RemoveFrontItem(t *testing.T) {
 	tests := []struct {
 		name          string
