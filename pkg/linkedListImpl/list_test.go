@@ -284,12 +284,12 @@ func TestLinkedList_RemoveItem(t *testing.T) {
 		name         string
 		expectedLen  int
 		expectedData []string
-		listData     func() (*LinkedList[string], Item[string])
+		listData     func() (*LinkedList[string], *Item[string])
 	}{
 		{
 			name:        "positive case - 1 - one item in list",
 			expectedLen: 0,
-			listData: func() (*LinkedList[string], Item[string]) {
+			listData: func() (*LinkedList[string], *Item[string]) {
 				l := InitLinkedList[string]()
 				itemToRemove := l.AddItemToBack("some_data")
 				return l, itemToRemove
@@ -299,7 +299,7 @@ func TestLinkedList_RemoveItem(t *testing.T) {
 		{
 			name:        "positive case - 2 - three items in list, deleted from middle",
 			expectedLen: 3,
-			listData: func() (*LinkedList[string], Item[string]) {
+			listData: func() (*LinkedList[string], *Item[string]) {
 				l := InitLinkedList[string]()
 				l.AddItemToBack(testString1)
 				l.AddItemToBack(testString2)
@@ -313,7 +313,7 @@ func TestLinkedList_RemoveItem(t *testing.T) {
 		{
 			name:        "positive case - 3 - delete first elem",
 			expectedLen: 3,
-			listData: func() (*LinkedList[string], Item[string]) {
+			listData: func() (*LinkedList[string], *Item[string]) {
 				l := InitLinkedList[string]()
 				itemToRemove := l.AddItemToFront("some_data")
 				l.AddItemToBack(testString1)
@@ -327,7 +327,7 @@ func TestLinkedList_RemoveItem(t *testing.T) {
 		{
 			name:        "positive case - 3 - delete last item",
 			expectedLen: 3,
-			listData: func() (*LinkedList[string], Item[string]) {
+			listData: func() (*LinkedList[string], *Item[string]) {
 				l := InitLinkedList[string]()
 				l.AddItemToBack(testString1)
 				l.AddItemToBack(testString2)
@@ -357,14 +357,14 @@ func TestLinkedList_InsertBeforeElem(t *testing.T) {
 		args         args
 		wantErr      bool
 		expectedData []string
-		listData     func() (*LinkedList[string], Item[string])
+		listData     func() (*LinkedList[string], *Item[string])
 	}{
 		{
 			name: "positive case - 1 - mark == head",
 			args: args{
 				element: testString1,
 			},
-			listData: func() (*LinkedList[string], Item[string]) {
+			listData: func() (*LinkedList[string], *Item[string]) {
 				l := InitLinkedList[string]()
 				mark := l.AddItemToFront("some_data")
 				l.AddItemToBack(testString1)
@@ -379,7 +379,7 @@ func TestLinkedList_InsertBeforeElem(t *testing.T) {
 			args: args{
 				element: testString1,
 			},
-			listData: func() (*LinkedList[string], Item[string]) {
+			listData: func() (*LinkedList[string], *Item[string]) {
 				l := InitLinkedList[string]()
 				l.AddItemToBack(testString1)
 				l.AddItemToBack(testString2)
@@ -394,7 +394,7 @@ func TestLinkedList_InsertBeforeElem(t *testing.T) {
 			args: args{
 				element: testString1,
 			},
-			listData: func() (*LinkedList[string], Item[string]) {
+			listData: func() (*LinkedList[string], *Item[string]) {
 				l := InitLinkedList[string]()
 				l.AddItemToBack(testString1)
 				mark := l.AddItemToBack("some_data")
@@ -408,7 +408,7 @@ func TestLinkedList_InsertBeforeElem(t *testing.T) {
 			args: args{
 				element: testString1,
 			},
-			listData: func() (*LinkedList[string], Item[string]) {
+			listData: func() (*LinkedList[string], *Item[string]) {
 				l := InitLinkedList[string]()
 				l.AddItemToBack(testString1)
 				mark := l.AddItemToBack("some_data")
@@ -424,7 +424,7 @@ func TestLinkedList_InsertBeforeElem(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l, mark := tt.listData()
-			err := l.InsertBeforeElem("test_data_to_add", &mark)
+			err := l.InsertBeforeElem("test_data_to_add", mark)
 			if tt.wantErr {
 				assert.Errorf(t, err, ErrNoItem.Error())
 			}

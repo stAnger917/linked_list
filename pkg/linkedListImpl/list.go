@@ -36,35 +36,35 @@ func (l *LinkedList[T]) ListToSlice() []T {
 	return result
 }
 
-func (l *LinkedList[T]) AddItemToFront(v T) Item[T] {
-	item := Item[T]{value: v}
+func (l *LinkedList[T]) AddItemToFront(v T) *Item[T] {
+	item := &Item[T]{value: v}
 	temp := l.head
 	item.next = temp
-	l.head = &item
+	l.head = item
 	if l.len == 0 {
 		l.tail = l.head
 	} else {
-		temp.prev = &item
+		temp.prev = item
 	}
 	l.len++
 	return item
 }
 
-func (l *LinkedList[T]) AddItemToBack(v T) Item[T] {
-	item := Item[T]{value: v}
+func (l *LinkedList[T]) AddItemToBack(v T) *Item[T] {
+	item := &Item[T]{value: v}
 	temp := l.tail
 	item.prev = temp
-	l.tail = &item
+	l.tail = item
 	if l.len == 0 {
 		l.head = l.tail
 	} else {
-		temp.next = &item
+		temp.next = item
 	}
 	l.len++
 	return item
 }
 
-func (l *LinkedList[T]) RemoveItem(item Item[T]) {
+func (l *LinkedList[T]) RemoveItem(item *Item[T]) {
 	prev := item.prev
 	next := item.next
 	if prev != nil {
@@ -126,36 +126,18 @@ func (l *LinkedList[T]) InsertBeforeElem(element T, mark *Item[T]) error {
 	if l.head == nil {
 		return ErrNoItem
 	}
-	if mark.next == nil {
-		if mark.prev == l.tail.prev {
-			l.addItemBefore(l.tail, element)
-			return nil
-		}
-	}
-	if l.head.next == mark.next {
-		l.AddItemToFront(element)
+	prev := mark.prev
+	if prev == nil && l.head == mark {
+		newItem := &Item[T]{value: element}
+		newItem.next = mark
+		l.head = newItem
 	} else {
-		currentItem := l.head.next
-		for currentItem != nil && currentItem.prev != nil && currentItem.prev != mark {
-			if currentItem.prev == mark.prev && currentItem.next == mark.next {
-				l.addItemBefore(currentItem, element)
-				return nil
-			}
-			currentItem = currentItem.next
-		}
-	}
-	return nil
-}
+		newItem := &Item[T]{value: element}
+		newItem.prev = prev
+		prev.next = newItem
+		newItem.next = mark
 
-func (l *LinkedList[T]) addItemBefore(currentItem *Item[T], element T) {
-	z := currentItem.prev
-	newItem := &Item[T]{value: element}
-	newItem.next = currentItem
-	newItem.prev = z
-	z.next = newItem
-	currentItem.prev = newItem
-	if currentItem.prev.prev != nil {
-		z.prev = currentItem.prev.prev
 	}
 	l.len++
+	return nil
 }
