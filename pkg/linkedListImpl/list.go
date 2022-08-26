@@ -122,22 +122,47 @@ func (l *LinkedList[T]) InsertAfterElem(element T, mark *Item[T]) error {
 	return nil
 }
 
-func (l *LinkedList[T]) InsertBeforeElem(element T, mark *Item[T]) error {
+func (l *LinkedList[T]) InsertBeforeElem(element T, mark *Item[T]) *Item[T] {
+	prev := mark.prev
+
+	newItem := &Item[T]{
+		value: element,
+		prev:  prev,
+		next:  mark,
+	}
+	if prev != nil {
+		prev.next = newItem
+	} else {
+		l.head = newItem
+	}
+	l.len++
+	return newItem
+}
+
+func (l *LinkedList[T]) RemoveFrontItem() error {
 	if l.head == nil {
 		return ErrNoItem
 	}
-	prev := mark.prev
-	if prev == nil && l.head == mark {
-		newItem := &Item[T]{value: element}
-		newItem.next = mark
-		l.head = newItem
-	} else {
-		newItem := &Item[T]{value: element}
-		newItem.prev = prev
-		prev.next = newItem
-		newItem.next = mark
+	l.head = l.head.next
+	l.len--
+	return nil
+}
 
+func (l *LinkedList[T]) RemoveBackItem() error {
+	if l.head == nil {
+		return ErrNoItem
 	}
-	l.len++
+	var prev *Item[T]
+	current := l.head
+	for current.next != nil {
+		prev = current
+		current = current.next
+	}
+	if prev != nil {
+		prev.next = nil
+	} else {
+		l.head = nil
+	}
+	l.len--
 	return nil
 }
