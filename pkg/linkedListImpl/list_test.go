@@ -1,6 +1,7 @@
 package linkedListImpl
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -384,6 +385,145 @@ func TestLinkedList_RemoveFrontItem(t *testing.T) {
 			if tt.itemValueLeft != "" {
 				assert.Equal(t, tt.itemValueLeft, item.value)
 			}
+		})
+	}
+}
+
+func TestLinkedList_RemoveBackItem(t *testing.T) {
+	tests := []struct {
+		name         string
+		finallyLen   int
+		expectedData []string
+		listData     func() *LinkedList[string]
+		wantErr      bool
+	}{
+		{
+			name:         "positive case - 1",
+			finallyLen:   2,
+			expectedData: []string{testString1, testString2},
+			listData: func() *LinkedList[string] {
+				l := InitLinkedList[string]()
+				l.AddItemToFront(testString1)
+				l.AddItemToBack(testString2)
+				l.AddItemToBack(testString3)
+				return l
+			},
+		},
+		{
+			name:         "positive case - 2 - single element in list",
+			finallyLen:   0,
+			expectedData: []string{},
+			listData: func() *LinkedList[string] {
+				l := InitLinkedList[string]()
+				l.AddItemToFront(testString1)
+				return l
+			},
+		},
+		{
+			name:         "positive case - 3 - empty list",
+			finallyLen:   0,
+			expectedData: []string{},
+			listData: func() *LinkedList[string] {
+				l := InitLinkedList[string]()
+				return l
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := tt.listData()
+			err := l.RemoveBackItem()
+			if tt.wantErr {
+				assert.Errorf(t, err, ErrNoItem.Error())
+			}
+			assert.Equal(t, tt.finallyLen, l.len)
+			assert.Equal(t, tt.expectedData, l.ListToSlice())
+		})
+	}
+}
+
+func TestLinkedList_InsertBeforeElem(t *testing.T) {
+	type args struct {
+		element string
+	}
+	tests := []struct {
+		name         string
+		args         args
+		wantErr      bool
+		expectedData []string
+		listData     func() (*LinkedList[string], Item[string])
+	}{
+		{
+			name: "positive case - 1 - mark == head",
+			args: args{
+				element: testString1,
+			},
+			listData: func() (*LinkedList[string], Item[string]) {
+				l := InitLinkedList[string]()
+				mark := l.AddItemToFront("some_data")
+				l.AddItemToBack(testString1)
+				mark.next = l.tail
+				l.AddItemToBack(testString2)
+				return l, mark
+			},
+			expectedData: []string{"test_data_to_add", "some_data", "first_string", "second_string"},
+		},
+		{
+			name: "positive case - 2 - mark == tail",
+			args: args{
+				element: testString1,
+			},
+			listData: func() (*LinkedList[string], Item[string]) {
+				l := InitLinkedList[string]()
+				l.AddItemToBack(testString1)
+				l.AddItemToBack(testString2)
+				mark := l.AddItemToBack("some_data")
+				fmt.Println(l.ListToSlice())
+				return l, mark
+			},
+			expectedData: []string{"first_string", "second_string", "test_data_to_add", "some_data"},
+		},
+		{
+			name: "positive case - 3 - mark == tail, 2 items in list",
+			args: args{
+				element: testString1,
+			},
+			listData: func() (*LinkedList[string], Item[string]) {
+				l := InitLinkedList[string]()
+				l.AddItemToBack(testString1)
+				mark := l.AddItemToBack("some_data")
+				fmt.Println(l.ListToSlice())
+				return l, mark
+			},
+			expectedData: []string{"first_string", "test_data_to_add", "some_data"},
+		},
+		{
+			name: "positive case - 4 - 4 items in list, mark in middle",
+			args: args{
+				element: testString1,
+			},
+			listData: func() (*LinkedList[string], Item[string]) {
+				l := InitLinkedList[string]()
+				l.AddItemToBack(testString1)
+				mark := l.AddItemToBack("some_data")
+				l.AddItemToBack(testString2)
+				mark.next = l.tail
+				l.AddItemToBack(testString3)
+				fmt.Println(l.ListToSlice())
+				return l, mark
+			},
+			expectedData: []string{"first_string", "test_data_to_add", "some_data", "second_string", "third_string"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l, mark := tt.listData()
+			err := l.InsertBeforeElem("test_data_to_add", &mark)
+			if tt.wantErr {
+				assert.Errorf(t, err, ErrNoItem.Error())
+			}
+			assert.Equal(t, tt.expectedData, l.ListToSlice())
 		})
 	}
 }

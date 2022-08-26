@@ -149,3 +149,41 @@ func (l *LinkedList[T]) InsertAfterElem(element T, mark *Item[T]) error {
 	}
 	return nil
 }
+
+func (l *LinkedList[T]) InsertBeforeElem(element T, mark *Item[T]) error {
+	if l.head == nil {
+		return ErrNoItem
+	}
+	if mark.next == nil {
+		if mark.prev == l.tail.prev {
+			l.addItemBefore(l.tail, element)
+			return nil
+		}
+	}
+	if l.head.next == mark.next {
+		l.AddItemToFront(element)
+	} else {
+		currentItem := l.head.next
+		for currentItem != nil && currentItem.prev != nil && currentItem.prev != mark {
+			if currentItem.prev == mark.prev && currentItem.next == mark.next {
+				l.addItemBefore(currentItem, element)
+				return nil
+			}
+			currentItem = currentItem.next
+		}
+	}
+	return nil
+}
+
+func (l *LinkedList[T]) addItemBefore(currentItem *Item[T], element T) {
+	z := currentItem.prev
+	newItem := &Item[T]{value: element}
+	newItem.next = currentItem
+	newItem.prev = z
+	z.next = newItem
+	currentItem.prev = newItem
+	if currentItem.prev.prev != nil {
+		z.prev = currentItem.prev.prev
+	}
+	l.len++
+}
