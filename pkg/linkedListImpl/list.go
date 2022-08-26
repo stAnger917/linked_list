@@ -75,7 +75,7 @@ func (l *LinkedList[T]) RemoveItem(item Item[T]) {
 	if next != nil {
 		next.prev = prev
 	} else {
-		l.tail = prev
+		l.tail = next
 	}
 	l.len--
 	item.prev = nil

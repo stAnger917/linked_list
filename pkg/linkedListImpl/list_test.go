@@ -6,6 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var testString1 = "first_string"
+var testString2 = "second_string"
+var testString3 = "third_string"
+
 func TestLinkedList_GetListLength(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -276,30 +280,69 @@ func TestLinkedList_AddItemToBack_Value(t *testing.T) {
 
 func TestLinkedList_RemoveItem(t *testing.T) {
 	tests := []struct {
-		name        string
-		expectedLen int
-		dataToAdd   []string
+		name         string
+		expectedLen  int
+		expectedData []string
+		listData     func() (*LinkedList[string], Item[string])
 	}{
 		{
-			name:        "positive case - 1",
+			name:        "positive case - 1 - one item in list",
 			expectedLen: 0,
-			dataToAdd:   []string{},
+			listData: func() (*LinkedList[string], Item[string]) {
+				l := InitLinkedList[string]()
+				itemToRemove := l.AddItemToBack("some_data")
+				return l, itemToRemove
+			},
+			expectedData: []string{},
 		},
 		{
-			name:        "positive case - 2",
-			expectedLen: 1,
-			dataToAdd:   []string{"some_data"},
+			name:        "positive case - 2 - three items in list, deleted from middle",
+			expectedLen: 3,
+			listData: func() (*LinkedList[string], Item[string]) {
+				l := InitLinkedList[string]()
+				l.AddItemToBack(testString1)
+				l.AddItemToBack(testString2)
+				itemToRemove := l.AddItemToBack("some_data")
+				l.AddItemToBack(testString3)
+				itemToRemove.next = l.tail
+				return l, itemToRemove
+			},
+			expectedData: []string{testString1, testString2, testString3},
+		},
+		{
+			name:        "positive case - 3 - delete first elem",
+			expectedLen: 3,
+			listData: func() (*LinkedList[string], Item[string]) {
+				l := InitLinkedList[string]()
+				itemToRemove := l.AddItemToFront("some_data")
+				l.AddItemToBack(testString1)
+				itemToRemove.next = l.tail
+				l.AddItemToBack(testString2)
+				l.AddItemToBack(testString3)
+				return l, itemToRemove
+			},
+			expectedData: []string{testString1, testString2, testString3},
+		},
+		{
+			name:        "positive case - 3 - delete first elem",
+			expectedLen: 3,
+			listData: func() (*LinkedList[string], Item[string]) {
+				l := InitLinkedList[string]()
+				l.AddItemToBack(testString1)
+				l.AddItemToBack(testString2)
+				l.AddItemToBack(testString3)
+				itemToRemove := l.AddItemToBack("some_data")
+				return l, itemToRemove
+			},
+			expectedData: []string{testString1, testString2, testString3},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := InitLinkedList[string]()
-			for _, v := range tt.dataToAdd {
-				l.AddItemToFront(v)
-			}
-			elem := l.AddItemToBack("test_data")
-			l.RemoveItem(elem)
+			l, item := tt.listData()
+			l.RemoveItem(item)
 			assert.Equal(t, tt.expectedLen, l.len)
+			assert.Equal(t, tt.expectedData, l.ListToSlice())
 		})
 	}
 }
