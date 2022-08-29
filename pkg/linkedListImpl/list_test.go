@@ -1,7 +1,6 @@
 package linkedListImpl
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -383,7 +382,6 @@ func TestLinkedList_InsertBeforeElem(t *testing.T) {
 				l.AddItemToBack(testString1)
 				l.AddItemToBack(testString2)
 				mark := l.AddItemToBack("some_data")
-				fmt.Println(l.ListToSlice())
 				return l, mark
 			},
 			expectedData: []string{"first_string", "second_string", "test_data_to_add", "some_data"},
@@ -397,7 +395,6 @@ func TestLinkedList_InsertBeforeElem(t *testing.T) {
 				l := InitLinkedList[string]()
 				l.AddItemToBack(testString1)
 				mark := l.AddItemToBack("some_data")
-				fmt.Println(l.ListToSlice())
 				return l, mark
 			},
 			expectedData: []string{"first_string", "test_data_to_add", "some_data"},
@@ -414,7 +411,6 @@ func TestLinkedList_InsertBeforeElem(t *testing.T) {
 				l.AddItemToBack(testString2)
 				mark.next = l.tail
 				l.AddItemToBack(testString3)
-				fmt.Println(l.ListToSlice())
 				return l, mark
 			},
 			expectedData: []string{"first_string", "test_data_to_add", "some_data", "second_string", "third_string"},
@@ -465,7 +461,6 @@ func TestLinkedList_InsertAfterElem(t *testing.T) {
 				l.AddItemToBack(testString1)
 				l.AddItemToBack(testString2)
 				mark := l.AddItemToBack("some_data")
-				fmt.Println(l.ListToSlice())
 				return l, mark
 			},
 			expectedData: []string{"first_string", "second_string", "some_data", "test_data_to_add"},
@@ -476,7 +471,6 @@ func TestLinkedList_InsertAfterElem(t *testing.T) {
 				l := InitLinkedList[string]()
 				l.AddItemToBack(testString1)
 				mark := l.AddItemToBack("some_data")
-				fmt.Println(l.ListToSlice())
 				return l, mark
 			},
 			expectedData: []string{"first_string", "some_data", "test_data_to_add"},
@@ -490,7 +484,6 @@ func TestLinkedList_InsertAfterElem(t *testing.T) {
 				l.AddItemToBack(testString2)
 				mark.next = l.tail
 				l.AddItemToBack(testString3)
-				fmt.Println(l.ListToSlice())
 				return l, mark
 			},
 			expectedData: []string{"first_string", "some_data", "test_data_to_add", "second_string", "third_string"},
