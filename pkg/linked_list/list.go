@@ -1,9 +1,10 @@
-package linkedListImpl
+package linked_list
 
 type Item[T any] struct {
-	value T
-	prev  *Item[T]
-	next  *Item[T]
+	value     T
+	prev      *Item[T]
+	next      *Item[T]
+	isDeleted bool
 }
 
 type LinkedList[T any] struct {
@@ -31,16 +32,36 @@ func (l *LinkedList[T]) GetTail() *Item[T] {
 func (l *LinkedList[T]) ListToSlice() []T {
 	result := make([]T, 0, l.len)
 	for h := l.head; h != nil; h = h.next {
-		result = append(result, h.value)
+		if !h.isDeleted {
+			result = append(result, h.value)
+		}
 	}
 	return result
 }
 
+func (l *LinkedList[T]) SingleElementList(v T) *Item[T] {
+	item := &Item[T]{
+		value: v,
+	}
+	l.head = item
+	l.tail = item
+	l.len++
+	return item
+}
+
 func (l *LinkedList[T]) AddItemToFront(v T) *Item[T] {
+	if l.len == 0 {
+		item := l.SingleElementList(v)
+		return item
+	}
 	return l.InsertBeforeElem(v, l.head)
 }
 
 func (l *LinkedList[T]) AddItemToBack(v T) *Item[T] {
+	if l.len == 0 {
+		item := l.SingleElementList(v)
+		return item
+	}
 	return l.InsertAfterElem(v, l.tail)
 }
 
@@ -60,6 +81,7 @@ func (l *LinkedList[T]) RemoveItem(item *Item[T]) {
 	l.len--
 	item.prev = nil
 	item.next = nil
+	item.isDeleted = true
 }
 
 func (i Item[T]) GetItemValue() T {
@@ -75,11 +97,15 @@ func (i Item[T]) GetPreviousItemPointer() *Item[T] {
 }
 
 func (l *LinkedList[T]) InsertAfterElem(element T, mark *Item[T]) *Item[T] {
+	if mark.isDeleted {
+		return nil
+	}
 	next := mark.next
 	newItem := &Item[T]{
-		value: element,
-		prev:  mark,
-		next:  next,
+		value:     element,
+		prev:      mark,
+		next:      next,
+		isDeleted: false,
 	}
 	mark.next = newItem
 	if next != nil {
@@ -92,11 +118,15 @@ func (l *LinkedList[T]) InsertAfterElem(element T, mark *Item[T]) *Item[T] {
 }
 
 func (l *LinkedList[T]) InsertBeforeElem(element T, mark *Item[T]) *Item[T] {
+	if mark.isDeleted {
+		return nil
+	}
 	prev := mark.prev
 	newItem := &Item[T]{
-		value: element,
-		prev:  prev,
-		next:  mark,
+		value:     element,
+		prev:      prev,
+		next:      mark,
+		isDeleted: false,
 	}
 	mark.prev = newItem
 	if prev != nil {

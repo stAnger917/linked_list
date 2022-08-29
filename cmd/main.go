@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	l "linked_list/pkg/linkedListImpl"
+	l "linked_list/pkg/linked_list"
 	"log"
 )
 

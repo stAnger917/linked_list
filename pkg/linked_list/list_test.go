@@ -1,4 +1,4 @@
-package linkedListImpl
+package linked_list
 
 import (
 	"testing"
@@ -343,6 +343,7 @@ func TestLinkedList_RemoveItem(t *testing.T) {
 			l.RemoveItem(item)
 			assert.Equal(t, tt.expectedLen, l.len)
 			assert.Equal(t, tt.expectedData, l.ListToSlice())
+			assert.Equal(t, item.isDeleted, true)
 		})
 	}
 }
