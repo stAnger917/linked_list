@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	l "linked_list/pkg/linked_list"
+	l "github.com/stAnger917/linked_list/v2/pkg/linked_list"
 	"log"
 )
 
