@@ -37,31 +37,11 @@ func (l *LinkedList[T]) ListToSlice() []T {
 }
 
 func (l *LinkedList[T]) AddItemToFront(v T) *Item[T] {
-	item := &Item[T]{value: v}
-	temp := l.head
-	item.next = temp
-	l.head = item
-	if l.len == 0 {
-		l.tail = l.head
-	} else {
-		temp.prev = item
-	}
-	l.len++
-	return item
+	return l.InsertBeforeElem(v, l.head)
 }
 
 func (l *LinkedList[T]) AddItemToBack(v T) *Item[T] {
-	item := &Item[T]{value: v}
-	temp := l.tail
-	item.prev = temp
-	l.tail = item
-	if l.len == 0 {
-		l.head = l.tail
-	} else {
-		temp.next = item
-	}
-	l.len++
-	return item
+	return l.InsertAfterElem(v, l.tail)
 }
 
 func (l *LinkedList[T]) RemoveItem(item *Item[T]) {
@@ -132,8 +112,7 @@ func (l *LinkedList[T]) RemoveFrontItem() error {
 	if l.head == nil {
 		return ErrNoItem
 	}
-	l.head = l.head.next
-	l.len--
+	l.RemoveItem(l.head)
 	return nil
 }
 
@@ -141,17 +120,6 @@ func (l *LinkedList[T]) RemoveBackItem() error {
 	if l.head == nil {
 		return ErrNoItem
 	}
-	var prev *Item[T]
-	current := l.head
-	for current.next != nil {
-		prev = current
-		current = current.next
-	}
-	if prev != nil {
-		prev.next = nil
-	} else {
-		l.head = nil
-	}
-	l.len--
+	l.RemoveItem(l.tail)
 	return nil
 }
